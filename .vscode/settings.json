@@ -1,3 +1,16 @@
 {
-  "cSpell.words": ["timesteps"]
+  "cSpell.words": [
+    "apng",
+    "DDPG",
+    "Huggingface",
+    "jshtml",
+    "mujoco",
+    "ndarray",
+    "numpngw",
+    "Numpy",
+    "opengl",
+    "orga",
+    "timesteps",
+    "xvfb"
+  ]
 }
