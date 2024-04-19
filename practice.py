@@ -6,6 +6,8 @@ from gym import spaces
 from stable_baselines3 import DDPG
 from stable_baselines3.her import HerReplayBuffer
 from sb3_contrib import TQC
+import matplotlib.pyplot as plt
+
 
 class CustomEnv(gym.Env):
     def __init__(self, env):
@@ -32,16 +34,26 @@ class CustomEnv(gym.Env):
         # Modify the observation as needed
         return observation
 # 환경 생성과 래퍼 적용
-env = gym.make('PandaReach-v1')
+env = gym.make('PandaReachDense-v1')
 env = gym.wrappers.TimeLimit(env, max_episode_steps=1000) 
 env = CustomEnv(env)
 
 # 모델 로드
 model = TQC.load("tqc-PandaReach-v1", env, replay_buffer_class=HerReplayBuffer, replay_buffer_kwargs={'n_sampled_goal': 4, 'goal_selection_strategy': 'future', 'max_episode_length': 100})
 observation, info,_ = env.reset()
-
-for _ in range(1000):
+rewards=[]
+for _ in range(100):
     action = env.action_space.sample() # random action
     observation, reward, terminated, truncated = env.step(action)
     if terminated or truncated:
         observation, info,_ = env.reset()
+    rewards.append(reward)
+
+
+# 보상 그래프 그리기
+plt.figure(figsize=(10, 5))  # 그래프 크기 설정
+plt.plot(rewards)  # 보상 리스트를 사용하여 그래프 그리기
+plt.title('Reward over time')  # 그래프 제목 설정
+plt.xlabel('Step')  # x축 라벨 설정
+plt.ylabel('Reward')  # y축 라벨 설정
+plt.show()  # 그래프 표시
