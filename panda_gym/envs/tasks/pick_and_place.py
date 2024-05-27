@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
+
 import numpy as np
+
 from panda_gym.envs.core import Task
 from panda_gym.pybullet import PyBullet
 from panda_gym.utils import distance
@@ -9,7 +11,7 @@ class PickAndPlace(Task):
     def __init__(
         self,
         sim: PyBullet,
-        num_objects: int = 3,  # 여러 개의 객체를 처리하기 위해 객체 수를 추가
+        num_objects: int = 2,  # 여러 개의 객체를 처리하기 위해 객체 수를 추가
         reward_type: str = "sparse",
         distance_threshold: float = 0.05,
         goal_xy_range: float = 0.3,
@@ -75,7 +77,7 @@ class PickAndPlace(Task):
             obs.extend([pos, rot, vel, ang_vel])
         obs_array = np.concatenate(obs)
         # Debug statement
-        print(f"get_obs: obs_array shape = {obs_array.shape}")
+        # print(f"get_obs: obs_array shape = {obs_array.shape}")
         return obs_array
 
     def get_achieved_goal(self) -> np.ndarray:
@@ -86,8 +88,8 @@ class PickAndPlace(Task):
         achieved_goals_array = np.concatenate(
             achieved_goals).reshape(self.num_objects, -1)
         # Debug statement
-        print(
-            f"get_achieved_goal: achieved_goals_array shape = {achieved_goals_array.shape}")
+        # print(
+        #    f"get_achieved_goal: achieved_goals_array shape = {achieved_goals_array.shape}")
         return achieved_goals_array
 
     def reset(self) -> np.ndarray:
@@ -100,18 +102,18 @@ class PickAndPlace(Task):
                 self.sim.set_base_pose(target_name, pos, [0, 0, 0, 1])
             self.goal = self.get_achieved_goal()  # Ensure the goal is set here
         obs = self.get_obs()
-        print(f"reset: obs shape = {obs.shape}")  # Debug statement
+        # print(f"reset: obs shape = {obs.shape}")  # Debug statement
         return obs
 
     def is_success(self, achieved_goals: np.ndarray, desired_goals: np.ndarray) -> bool:
         # Debug statement
-        print(
-            f"is_success: achieved_goals shape = {achieved_goals.shape}, desired_goals shape = {desired_goals.shape}")
+        # print(
+        #    f"is_success: achieved_goals shape = {achieved_goals.shape}, desired_goals shape = {desired_goals.shape}")
         success = True
         for achieved_goal, desired_goal in zip(achieved_goals, desired_goals):
             # Debug statement
-            print(
-                f"Comparing achieved_goal: {achieved_goal}, desired_goal: {desired_goal}")
+            # print(
+            #    f"Comparing achieved_goal: {achieved_goal}, desired_goal: {desired_goal}")
             if distance(achieved_goal, desired_goal) >= self.distance_threshold:
                 success = False
                 break
@@ -119,17 +121,17 @@ class PickAndPlace(Task):
 
     def compute_reward(self, achieved_goals: np.ndarray, desired_goals: np.ndarray, info: Dict[str, Any]) -> float:
         # Debug statement
-        print(
-            f"compute_reward: achieved_goals shape = {achieved_goals.shape}, desired_goals shape = {desired_goals.shape}")
+        # print(
+        #    f"compute_reward: achieved_goals shape = {achieved_goals.shape}, desired_goals shape = {desired_goals.shape}")
         rewards = 0
         for achieved_goal, desired_goal in zip(achieved_goals, desired_goals):
             d = distance(achieved_goal, desired_goal)
             # Debug statement
-            print(f"Distance between achieved_goal and desired_goal: {d}")
+            # print(f"Distance between achieved_goal and desired_goal: {d}")
             if self.reward_type == "sparse":
                 rewards += - \
                     np.array(d > self.distance_threshold, dtype=np.float32)
             else:
                 rewards += -d.astype(np.float32)
-        print(f"compute_reward: rewards = {rewards}")  # Debug statement
+        # print(f"compute_reward: rewards = {rewards}")  # Debug statement
         return rewards
