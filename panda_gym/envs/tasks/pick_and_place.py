@@ -61,11 +61,6 @@ class PickAndPlace(Task):
                 rgba_color=np.random.rand(4) * 0.5 + 0.5,  # 반투명
             )
 
-    def _sample_object(self) -> np.ndarray:
-        return np.random.uniform(self.obj_range_low, self.obj_range_high)
-
-    def _sample_goal(self) -> np.ndarray:
-        return np.random.uniform(self.goal_range_low, self.goal_range_high)
 
     def get_obs(self) -> np.ndarray:
         obs = []
@@ -105,6 +100,12 @@ class PickAndPlace(Task):
         # print(f"reset: obs shape = {obs.shape}")  # Debug statement
         return obs
 
+    def _sample_object(self) -> np.ndarray: #물체위치 랜덤
+        return np.random.uniform(self.obj_range_low, self.obj_range_high)
+
+    def _sample_goal(self) -> np.ndarray: #목표위치 랜덤
+        return np.random.uniform(self.goal_range_low, self.goal_range_high)
+
     def is_success(self, achieved_goals: np.ndarray, desired_goals: np.ndarray) -> bool:
         # Debug statement
         # print(
@@ -120,18 +121,12 @@ class PickAndPlace(Task):
         return success
 
     def compute_reward(self, achieved_goals: np.ndarray, desired_goals: np.ndarray, info: Dict[str, Any]) -> float:
-        # Debug statement
-        # print(
-        #    f"compute_reward: achieved_goals shape = {achieved_goals.shape}, desired_goals shape = {desired_goals.shape}")
         rewards = 0
         for achieved_goal, desired_goal in zip(achieved_goals, desired_goals):
             d = distance(achieved_goal, desired_goal)
-            # Debug statement
-            # print(f"Distance between achieved_goal and desired_goal: {d}")
             if self.reward_type == "sparse":
                 rewards += - \
                     np.array(d > self.distance_threshold, dtype=np.float32)
             else:
                 rewards += -d.astype(np.float32)
-        # print(f"compute_reward: rewards = {rewards}")  # Debug statement
         return rewards
