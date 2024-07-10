@@ -1,0 +1,16 @@
+python -m rl_zoo3.train --algo tqc --env PandaPickAndPlaceDense-v3 -f logs/ -tb tensorboard/ --save-freq 500000
+python -m rl_zoo3.train --algo tqc --env PandaPickAndPlace-v3 -f logs/ -tb tensorboard/ --save-freq 500000 -i C:\Users\LoewllZoe\logs\tqc\PandaPickAndPlace-v3_156\rl_model_500000_steps.zip -n 10000000
+python -m rl_zoo3.train --algo tqc --env PandaSorter-v3 -f logs/ -tb tensorboard/ --save-freq 500000
+
+python -m rl_zoo3.train --algo tqc --env PandaPickAndPlaceDense-v3 -n 50000 -optimize --n-trials 1000 --n-jobs 2  --sampler tpe --pruner median
+
+tensorboard --logdir C:\Users\LoewllZoe\tensorboard
+
+
+python -m rl_zoo3.enjoy --algo tqc --env PandaPickAndPlace-v3  -f logs/
+python enjoy.py --algo algo_name --env env_id -f logs/ --exp-id 1 --load-best
+
+python -m rl_zoo3.record_video --algo tqc --env PandaPickAndPlace-v3 -n 1000 --load-best
+python -m rl_zoo3.record_video --algo tqc --env PandaPickAndPlace-v3 -n 1000 --load-checkpoint 2500000
+
+
